@@ -1,4 +1,4 @@
-# 📍 React Native Maps – Busca de Localização
+# React Native Maps – Busca de Localização
 
 Este projeto é um aplicativo em **React Native (Expo)** que permite ao usuário pesquisar qualquer local pelo nome e visualizar sua posição no mapa utilizando a **API de Geocoding do Google Maps**.
 
