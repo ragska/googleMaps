@@ -1,15 +1,8 @@
 import React, { useRef, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  TextInput,
-  Button,
-  Keyboard,
-  Platform,
-  Text,
-} from "react-native";
+import { StyleSheet, View, Dimensions, TextInput, Button, Keyboard, Platform, Text } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import Constants from 'expo-constants';
+import { Alert } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 // Componente principal do app
@@ -35,6 +28,15 @@ export default function App() {
 
     // Se não tem query, não faz nada
     if (!query || !query.trim()) return;
+
+    // Obtém a chave da configuração (app.config.js -> extra) ou do env
+    const GOOGLE_MAPS_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+    if (!GOOGLE_MAPS_API_KEY) {
+      console.warn('Chave da API do Google Maps não encontrada. Defina EXPO_PUBLIC_GOOGLE_MAPS_API_KEY.');
+      Alert.alert('Erro', 'Chave da API do Google Maps não encontrada. Defina EXPO_PUBLIC_GOOGLE_MAPS_API_KEY.');
+      return;
+    }
 
     try {
       // Monta a URL da API de Geocoding — você precisa da chave em .env
@@ -102,7 +104,7 @@ export default function App() {
             </View>
           </View>
 
-          {/* MapView: componente principal que renderiza o mapa */}
+          {/* MapView: componente que renderiza o mapa */}
           <MapView
             // Usa o provedor Google (útil quando deseja forçar Google Maps)
             provider={PROVIDER_GOOGLE}
