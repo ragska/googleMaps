@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Dimensions,
@@ -10,6 +9,7 @@ import {
   Platform,
   Text,
 } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 // Importa a variável de ambiente (API Key) do arquivo .env via plugin babel (module:react-native-dotenv)
 // Veja instruções abaixo para configurar o plugin e criar o arquivo .env
@@ -18,7 +18,7 @@ import { GOOGLE_MAPS_API_KEY } from "@env";
 
 // Componente principal do app
 export default function App() {
-  // Ref para acessar métodos do MapView (ex: animateToRegion)
+  // Ref para acessar métodos do MapView
   const mapRef = useRef(null);
 
   // Estado do texto digitado no campo de busca
@@ -84,60 +84,61 @@ export default function App() {
   };
 
   return (
-    // SafeAreaView garante que o mapa não ficará sob a status bar (área segura)
-    <SafeAreaView style={styles.safeArea}>
-      {/* Container principal */}
-      <View style={styles.container}>
-        {/* Barra de busca — posicionada sobre o mapa */}
-        <View style={styles.searchContainer}>
-          {/* Campo de texto para digitar o local desejado */}
-          <TextInput
-            placeholder="Buscar local"
-            value={query}
-            onChangeText={setQuery}
-            style={styles.input}
-            returnKeyType="search"
-            onSubmitEditing={searchLocation}
-            clearButtonMode="while-editing"
-          />
-          {/* Botão para confirmar a busca */}
-          <View style={styles.buttonWrapper}>
-            <Button title="Ir" onPress={searchLocation} />
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        {/* Container principal */}
+        <View style={styles.container}>
+          {/* Barra de busca — posicionada sobre o mapa */}
+          <View style={styles.searchContainer}>
+            {/* Campo de texto para digitar o local desejado */}
+            <TextInput
+              placeholder="Buscar local"
+              value={query}
+              onChangeText={setQuery}
+              style={styles.input}
+              returnKeyType="search"
+              onSubmitEditing={searchLocation}
+              clearButtonMode="while-editing"
+            />
+            {/* Botão para confirmar a busca */}
+            <View style={styles.buttonWrapper}>
+              <Button title="Ir" onPress={searchLocation} />
+            </View>
           </View>
+
+          {/* MapView: componente principal que renderiza o mapa */}
+          <MapView
+            // Usa o provedor Google (útil quando deseja forçar Google Maps)
+            provider={PROVIDER_GOOGLE}
+            ref={mapRef}
+            style={styles.map}
+            // Região inicial centrada em São Paulo
+            initialRegion={{
+              latitude: -23.55052,
+              longitude: -46.633308,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            // Tipo de mapa: 'standard' | 'satellite' | 'hybrid' | 'terrain'
+            mapType={Platform.OS === "android" ? "standard" : "standard"}
+
+          >
+            {/* Marcador que mostra o local atual ou o resultado da busca */}
+            <Marker
+              coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
+              title={marker.title}
+              description={marker.description}
+              // pinColor pode customizar a cor do marcador
+              pinColor="#FF5A5F"
+            />
+          </MapView>
         </View>
-
-        {/* MapView: componente principal que renderiza o mapa */}
-        <MapView
-          // Usa o provedor Google (útil quando deseja forçar Google Maps)
-          provider={PROVIDER_GOOGLE}
-          ref={mapRef}
-          style={styles.map}
-          // Região inicial centrada em São Paulo
-          initialRegion={{
-            latitude: -23.55052,
-            longitude: -46.633308,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          // Tipo de mapa: 'standard' | 'satellite' | 'hybrid' | 'terrain'
-          mapType={Platform.OS === "android" ? "standard" : "standard"}
-
-        >
-          {/* Marcador que mostra o local atual ou o resultado da busca */}
-          <Marker
-            coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-            title={marker.title}
-            description={marker.description}
-            // pinColor pode customizar a cor do marcador
-            pinColor="#FF5A5F"
-          />
-        </MapView>
-      </View>
-      {/* Footer com versão ou instruções de uso (opcional) */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Digite um local e pressione "Ir" para centralizar</Text>
-      </View>
-    </SafeAreaView>
+        {/* Footer com versão ou instruções de uso (opcional) */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Digite um local e pressione "Ir" para centralizar</Text>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
