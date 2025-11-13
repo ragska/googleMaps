@@ -11,10 +11,6 @@ import {
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-// Importa a variável de ambiente (API Key) do arquivo .env via plugin babel (module:react-native-dotenv)
-// Veja instruções abaixo para configurar o plugin e criar o arquivo .env
-import { GOOGLE_MAPS_API_KEY } from "@env";
-
 
 // Componente principal do app
 export default function App() {
